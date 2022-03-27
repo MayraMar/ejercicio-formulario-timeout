@@ -28,6 +28,35 @@ const baseDeDatos = {
   ],
 };
 
+let formulario = document.querySelector("form");
+let botonSubmit = document.querySelector(".login-btn");
+let loader = document.querySelector("#loader");
+//let errorLog = [];
+let error = document.getElementById("error-container");
+
+window.addEventListener("load", function () {
+  console.log("cargo la pagina");
+  formulario.addEventListener("submit", function (e) {
+    e.preventDefault();
+    //console.log("escuche el click");
+    loader.classList.remove("hidden");
+    setTimeout(function () {
+      //console.log("estoy dentro de la funcion espera");
+      loader.classList.add("hidden");
+      let emailIngresado = document.querySelector("#email-input").value;
+      let passIngresado = document.querySelector("#password-input").value;
+      if (validar(emailIngresado, passIngresado)) {
+        document.querySelector("main").innerHTML =
+          "<h1> Bienvenido al sitio 😀 </h1>";
+      } else {
+        error.classList.remove("hidden");
+        error.innerHTML =
+          "<small>Alguno de los datos ingresados son incorrectos</small>";
+      }
+    }, 3000);
+  });
+});
+
 // ACTIVIDAD
 
 // Paso a paso:
@@ -45,6 +74,21 @@ const baseDeDatos = {
 // 2) Que la contraseña tenga al menos 5 caracteres.
 // 3) Que los datos ingresados corresponden a una
 // persona que se encuentre registrada en la base de datos.
+function validar(email, pass) {
+  console.log("estoy en la funcion validar");
+  for (i = 0; i < baseDeDatos.usuarios.length; i++) {
+    let usuario = baseDeDatos.usuarios[i];
+    console.log("Chequie usuario id:" + (i + 1));
+    if (usuario.email == email) {
+      console.log("coincide email");
+      if (usuario.password == pass && pass.length > 4) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 // En caso de que alguna de las validaciones no sea exitosa,
 // se deberá mostrar un mensaje de error que diga "Alguno de los datos ingresados son incorrectos"
 
