@@ -36,26 +36,45 @@ let error = document.getElementById("error-container");
 
 window.addEventListener("load", function () {
   console.log("cargo la pagina");
-  formulario.addEventListener("submit", function (e) {
-    e.preventDefault();
-    //console.log("escuche el click");
-    loader.classList.remove("hidden");
-    setTimeout(function () {
-      //console.log("estoy dentro de la funcion espera");
-      loader.classList.add("hidden");
-      let emailIngresado = document.querySelector("#email-input").value;
-      let passIngresado = document.querySelector("#password-input").value;
-      if (validar(emailIngresado, passIngresado)) {
-        document.querySelector("main").innerHTML =
-          "<h1> Bienvenido al sitio 😀 </h1>";
-      } else {
-        error.classList.remove("hidden");
-        error.innerHTML =
-          "<small>Alguno de los datos ingresados son incorrectos</small>";
-      }
-    }, 3000);
-  });
+  if (localStorage.getItem("name")) {
+    document.querySelector(
+      "main"
+    ).innerHTML = `<h1> Bienvenid@ al sitio  ${localStorage.getItem(
+      "name"
+    )} 😀</h1>
+    <p> <button class="login-btn logout"> CERRAR SESION <button> </p>`;
+    let botonLogout = document.querySelector(".logout");
+          logout(botonLogout);
+  } else {
+    formulario.addEventListener("submit", function (e) {
+      e.preventDefault();
+      //console.log("escuche el click");
+      loader.classList.remove("hidden");
+      setTimeout(function () {
+        //console.log("estoy dentro de la funcion espera");
+        loader.classList.add("hidden");
+        let emailIngresado = document.querySelector("#email-input").value;
+        let passIngresado = document.querySelector("#password-input").value;
+        if (validar(emailIngresado, passIngresado)) {
+          localStorage.setItem("email", emailIngresado);
+          localStorage.setItem("password", passIngresado);
+          localStorage.setItem("name", obtenerNombre());
+          document.querySelector("main").innerHTML = 
+            `<h1> Bienvenid@ al sitio  ${obtenerNombre()} 😀</h1>
+            <p> <button class="login-btn logout"> CERRAR SESION <button> </p>`;
+          let botonLogout = document.querySelector(".logout");
+          logout(botonLogout);
+        } else {
+          error.classList.remove("hidden");
+          error.innerHTML =
+            "<small>Alguno de los datos ingresados son incorrectos</small>";
+        }
+      }, 3000);
+    });
+  }
 });
+
+
 
 // ACTIVIDAD
 
@@ -87,6 +106,24 @@ function validar(email, pass) {
     }
   }
   return false;
+}
+
+function obtenerNombre() {
+  let email = document.querySelector("#email-input").value;
+  for (i = 0; i < baseDeDatos.usuarios.length; i++) {
+    let usuario = baseDeDatos.usuarios[i];
+    if (usuario.email == email) {
+      return usuario.name;
+    }
+  }
+}
+
+function logout(botonLogout){
+  botonLogout.addEventListener("click", function () {
+    console.log("escucho el logout");
+    localStorage.clear();
+    location.reload();
+  });
 }
 
 // En caso de que alguna de las validaciones no sea exitosa,
